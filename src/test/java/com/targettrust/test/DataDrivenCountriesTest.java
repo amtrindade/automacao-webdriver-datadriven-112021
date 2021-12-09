@@ -11,32 +11,31 @@ import org.testng.annotations.Test;
 
 import com.targettrust.core.BaseTest;
 import com.targettrust.core.SpreadSheetData;
+import com.targettrust.page.MainPage;
+import com.targettrust.page.ResultPage;
 
 public class DataDrivenCountriesTest extends BaseTest{
+	
+	private MainPage mainPage;
+	private ResultPage resultPage;
 
 	@BeforeTest
 	public void beforeMethod() {
-		getDriver().get("https://en.wikipedia.org/");
+		mainPage = new MainPage();
+		mainPage.open();
 	}
 	
 	@Test(dataProvider = "countriesList")
 	public void searchCountriesLocal(String searchCountry, String expectedCountry) {
-		WebElement tfSearch = getDriver().findElement(By.id("searchInput"));
-		tfSearch.sendKeys(searchCountry);
-		
-		WebElement btnSearch = getDriver().findElement(By.id("searchButton"));
-		btnSearch.click();
-		
-		WebElement titleLabel = getDriver().findElement(By.id("firstHeading"));
-		assertEquals(titleLabel.getText(), expectedCountry, "Deveria ter pesquisao o país");
+		resultPage = mainPage.searchCountry(searchCountry);
+		assertEquals(resultPage.getTextTitle(), expectedCountry, "Deveria ter pesquisao o país");
 	}
 	
 	@DataProvider(name = "countriesList")
 	public Object[][] dataProviderList() {
 		return new Object[][] {
 			{"India", "India"},			
-			{"Brazil", "Brasil" },
-			{"Brasil", "Brazil" },
+			{"Brazil", "Brazil" },
 			{"Argentina", "Argentina"},
 			{"Italy", "Italy"},
 			{"Venezuela", "Venezuela"},
@@ -46,17 +45,10 @@ public class DataDrivenCountriesTest extends BaseTest{
 
 	@Test(dataProvider = "countriesExcel")
 	public void searchCountriesExcel(String searchCountry, String expectedCountry) {
-		WebElement tfSearch = getDriver().findElement(By.id("searchInput"));
-		tfSearch.sendKeys(searchCountry);
-		
-		WebElement btnSearch = getDriver().findElement(By.id("searchButton"));
-		btnSearch.click();
-		
-		WebElement titleLabel = getDriver().findElement(By.id("firstHeading"));
-		assertEquals(titleLabel.getText(), expectedCountry, "Deveria ter pesquisao o país");
+		resultPage = mainPage.searchCountry(searchCountry);
+		assertEquals(resultPage.getTextTitle(), expectedCountry, "Deveria ter pesquisao o país");
 	}
 
-	
 	@DataProvider(name = "countriesExcel")
 	public Object[][] dataProviderExcel(){
 		Object[][]testData = SpreadSheetData.readExcelData("Paises", 
